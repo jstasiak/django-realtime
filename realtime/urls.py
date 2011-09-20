@@ -1,5 +1,5 @@
-from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import patterns, url
 
 urlpatterns = patterns('',
-    url(r'^.*$', 'views.socketio_handler'),
+    url(r'^.*$', 'realtime.views.socketio_handler'),
 )
