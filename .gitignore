@@ -1,0 +1,15 @@
+*.mo
+
+*.pyc
+
+*.swp
+
+TAGS
+tags
+
+*.orig
+
+.idea
+.project
+.pydevproject
+.settings
