@@ -8,7 +8,7 @@ setup(
     author = "Jakub Stasiak",
     author_email = "kuba.stasiak@gmail.com",
     description = ("Django application that simplifies usage of socket.io in Django projects"),
-    long_description = open('README.rest').read(),
+    long_description = open('README.md').read(),
     url = "http://github.com/jstasiak/django-realtime",
     py_modules=["realtime",],
     install_requires=["gevent-socketio", "gevent-websocket"],
