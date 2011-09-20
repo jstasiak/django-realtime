@@ -21,12 +21,12 @@ Want to make use socket.io inside Django project? Use django-realtime project to
 1. Enjoy. ;) More documentation coming soon.
 
 
-***See my URL shortener project using django-realtime: http://github.com/jstasiak/rznij***
+***See my URL shortener project using django-realtime: https://github.com/jstasiak/rznij***
 
 Special requirements
 ====================
 
-* gevent-socketio, it has to be version from hg/develop branch from my repository: http://github.com/jstasiak/gevent-socket.io
+* gevent-socketio, it has to be version from hg/develop branch from my repository: https://github.com/jstasiak/gevent-socketio
 
 License
 ====
