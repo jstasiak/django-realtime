@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 def success(message = None, **kwargs):
     result = dict(kwargs)
     result['success'] = True

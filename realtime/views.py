@@ -2,14 +2,16 @@
 
 from django.http import HttpResponse
 from django.db import transaction
+from django.utils.translation import ugettext as _
 
-from .events import dispatcher, Event
+from .events import Event
+from .signals import socket_connected, socket_disconnected, socket_client_event, socket_client_message, socket_client_event_by_type
 
 @transaction.commit_manually
 def socketio_handler(request):
     try:
         socket = request.environ['socketio']
-        connection = Connection(socket)
+        connection = Connection(request = request, socket = socket)
         connection.handle()
     except Exception as e:
         transaction.rollback()
@@ -19,15 +21,15 @@ def socketio_handler(request):
 
 
 class Connection(object):
-    def __init__(self, socket):
-        self.socket = socket
-        session = socket.session
+    def __init__(self, request, socket):
+        self._request = request
+        self._socket = socket
 
     def handle(self):
-        socket = self.socket
+        socket = self._socket
+        request = self._request
 
-        connect_event = Event(self, dict(name = 'connect'))
-        self.handle_event(connect_event)
+        socket_connected.send(sender = socket, request = request)
 
         while True:
             message = socket.receive()
@@ -43,18 +45,18 @@ class Connection(object):
 
             transaction.commit()
 
-        disconnect_event = Event(self, dict(name = 'disconnect'))
-        self.handle_event(disconnect_event)
+        socket_disconnected.send(sender = socket, request = request)
 
     def handle_message(self, message):
+        request, socket = self._request, self._socket
         message_type = message.pop('type')
 
         if message_type == 'message':
-            print('TODO: message_type == message')
+            socket_client_message.send(sender = socket, request = request, message = message['data'])
         elif message_type == 'event':
-            event = Event(self, message)
-            self.handle_event(event)
-
-    def handle_event(self, event):
-        dispatcher.fire(event)
-
+            event = Event(socket = socket, data = message)
+            socket_client_event.send(sender = socket, request = request, event = event)
+            socket_client_event_by_type[event.name].send(sender = socket, request = request, event = event)
+        else:
+            assert False, "Should not happen"
+             
