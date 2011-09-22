@@ -1,4 +1,3 @@
-
 Installation
 ============
 
@@ -20,12 +19,10 @@ In Red Hat/CentOS/Fedora they can be obtained by following commands::
 Installation itself
 -------------------
 
-Django-realtime is distributed as setuptools package. To install it with pip simply execute::
+Django-realtime is distributed as setuptools package. To install it with pip execute::
 
     pip install git+https://jstasiak@github.com/jstasiak/django-realtime.git
 
-In ``dist`` directory of the package there is ``run.py`` script which can be used to run Django project
-using ``gevents PyWSGI`` server.
 
 Introduction
 ============
@@ -35,6 +32,32 @@ additional communication channels - events. Every event can be acknowledged with
 data which is really nice.
 
 Django-realtime Python package name is simply ``realtime``.
+
+Configuration of your project
+-----------------------------
+
+In ``dist`` directory of the package there is ``run.py`` script which can be used to run Django project
+using ``gevents PyWSGI`` server. It is required that you run server using this script, I advise that you
+copy it to your Django project root directory and run from there.
+
+Server listenson localhost:8000 by default, you can pass ``interface:port`` information in parameter,
+like this::
+
+    python run.py 0:8000
+
+Listening on ``0:8000`` means listening on port 8000 on all network interfaces (not only localhost).
+
+Next step is to configure Django project to use ``realtime`` app. To achieve this, you have to:
+
+* add ``realtime`` application to Django ``INSTALLED_APPS`` setting, for example::
+
+    INSTALLED_APPS += ['realtime']
+
+* configure URL dispatcher - you have to put this code in your main ``urls.py`` file::
+
+    urlpatterns += patterns('', url(r'^socket.io/', include('realtime.urls')) )
+
+
 
 Current connections
 -------------------
@@ -70,8 +93,8 @@ In module ``realtime.events`` there is ``Event`` class defined. Its public inter
 * ``ack(params)`` - functions which confirms receiving event and can be passed some data to send to client in confirmation
 * ``data`` - event data
 * ``name`` - name of the event
-* ``acknowledgeable`` - if this event can be acknowledged
-* ``acknowledged`` - if this event has been acknowledged already
+* ``acknowledgeable()`` - true if this event can be acknowledged
+* ``acknowledged()`` - true if this event has been acknowledged already
 
 Usage
 +++++
@@ -115,8 +138,9 @@ I want to thank following people for great code I can use in my projects:
 License
 =======
 
-This code is licensed under BSD license. Take it and you it.
+This project code is licensed under BSD license unless stated otherwise. Take it and you it.
 
+This repository also contains ``Socket.IO`` client which has its own license.
 
 .. _gevent-socketio: https://bitbucket.org/Jeffrey/gevent-socketio
 .. _socket.io: http://socket.io/
