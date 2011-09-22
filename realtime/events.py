@@ -1,4 +1,8 @@
 class Event(object):
+    '''
+    Represents socket event received from client. 
+    '''
+
     def __init__(self, socket, data):
         self._socket = socket
         self.name = data['name']
@@ -6,15 +10,22 @@ class Event(object):
         self._event_id = data.get('id')
         self._acknowledged = False
 
-    @property
     def acknowledgeable(self):
+        '''
+        Returns true if event can be acknowledged - it depends on specific socket.emit() call on client
+        '''
         return bool(self._event_id)
 
-    @property
     def acknowledged(self):
+        '''
+        Returns true if event has been already acknowledged.
+        '''
         return self._acknowledged
 
-    def ack(self, data):
+    def ack(self, data = None):
+        '''
+        Confirms reception of the event with optional data passed back to client.
+        '''
         assert self.acknowledgeable
         assert not self.acknowledged
 
