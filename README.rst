@@ -138,8 +138,9 @@ I want to thank following people for great code I can use in my projects:
 License
 =======
 
-This code is licensed under BSD license. Take it and you it.
+This project code is licensed under BSD license unless stated otherwise. Take it and you it.
 
+This repository also contains ``Socket.IO`` client which has its own license.
 
 .. _gevent-socketio: https://bitbucket.org/Jeffrey/gevent-socketio
 .. _socket.io: http://socket.io/
