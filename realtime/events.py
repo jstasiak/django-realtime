@@ -26,8 +26,8 @@ class Event(object):
         '''
         Confirms reception of the event with optional data passed back to client.
         '''
-        assert self.acknowledgeable
-        assert not self.acknowledged
+        assert self.acknowledgeable()
+        assert not self.acknowledged()
 
         self._socket.ack(self._event_id, [data])
         self._acknowledged = True
