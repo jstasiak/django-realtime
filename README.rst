@@ -36,16 +36,16 @@ Django-realtime Python package name is simply ``realtime``.
 Configuration of your project
 -----------------------------
 
-In ``dist`` directory of the package there is ``run.py`` script which can be used to run Django project
-using ``gevents PyWSGI`` server. It is required that you run server using this script, I advise that you
-copy it to your Django project root directory and run from there.
+You can run server by executing the following command within your project root directory::
 
-Server listenson localhost:8000 by default, you can pass ``interface:port`` information in parameter,
-like this::
+    python manage.py rungevent [interface:port]
 
-    python run.py 0:8000
+Interface and port part is optional, it defaults to localhost and 8000.
 
-Listening on ``0:8000`` means listening on port 8000 on all network interfaces (not only localhost).
+If you want to be able to connect to the server from remote hosts, enter ``0`` as interface, like
+this::
+
+    python manage.py rungevent 0:8000
 
 Next step is to configure Django project to use ``realtime`` app. To achieve this, you have to:
 
