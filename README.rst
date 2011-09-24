@@ -7,6 +7,7 @@ Requirements
 * gevent-socketio from `my gevent-socketio repository <https://github.com/jstasiak/gevent-socketio>`_
   (``hg/develop`` branch) and its dependencies
 * pip
+* django >= 1.3
 * git ;)
 
 In Red Hat/CentOS/Fedora they can be obtained by following commands::
@@ -14,6 +15,8 @@ In Red Hat/CentOS/Fedora they can be obtained by following commands::
     yum install libevent-devel python-setuptools gcc git-core
     easy_install pip
     pip install git+https://jstasiak@github.com/jstasiak/gevent-socketio.git@hg/develop
+
+You also want to have Socket.IO client, such client in version 0.8.4 is provided by this project.
 
 
 Installation itself
@@ -26,26 +29,32 @@ Django-realtime is distributed as setuptools package. To install it with pip exe
 
 Introduction
 ============
-This application allow you to use Socket.IO enabled communication within your Django project.
-It uses fairly recent version of Socket.IO - 0.8.4. What I like in Socket.IO > 0.6 is that it has
-additional communication channels - events. Every event can be acknowledged with optional return
-data which is really nice.
+This application allow you to use Socket.IO based communication within your Django project.
+It uses fairly recent version of Socket.IO - currently 0.8.4.
+What I like in Socket.IO newer than 0.6 is that it has additional communication
+channels - events. Every event can be acknowledged with optional return data which is really
+nice feature.
+
+It also uses gevent-socketio development version patched by me. Without gevent-socketio this application wouldn't exist.
+
+Some features of django-realtime are inspired by django-socketio project
+(https://github.com/stephenmcd/django-socketio). I like django-socketio, but:
+
+* it provides channels (pretty much something like Socket.IO events) by modifying client
+  code, I wanted to avoid that
+* supports only Socket.IO 0.6, so there is no events and no akcnowledgements (as far as I know)
+* has its own event system. django-realtime had such custom system in the past, but I have
+  decided to rewrite it to use Django signals and I am happy with that, also it is interface
+  which people are familiar with
+* I started this project before I discovered django-socketio ;)
 
 Django-realtime Python package name is simply ``realtime``.
 
 Configuration of your project
 -----------------------------
 
-You can run server by executing the following command within your project root directory::
-
-    python manage.py rungevent [interface:port]
-
-Interface and port part is optional, it defaults to localhost and 8000.
-
-If you want to be able to connect to the server from remote hosts, enter ``0`` as interface, like
-this::
-
-    python manage.py rungevent 0:8000
+Backend
++++++++
 
 Next step is to configure Django project to use ``realtime`` app. To achieve this, you have to:
 
@@ -57,7 +66,69 @@ Next step is to configure Django project to use ``realtime`` app. To achieve thi
 
     urlpatterns += patterns('', url(r'^socket.io/', include('realtime.urls')) )
 
+Frontend
+++++++++
 
+If you want to use Socket.IO client provided by django-realtime, put following code in ``HEAD`` section of your HTML template file::
+
+    {% load socketio %}
+    {% socketio_client_script %}
+
+Socket.IO client provided by this project is not modified and is provided purely for your convenience. 
+
+Then you probably would write some code actually connecting to server and making use of
+Socket.IO client. This is beyond this projects scope, although I present here template
+I always take and customize::
+
+    socket = io.connect(null, { transports: ['flashsocket', 'xhr-polling'] });
+    socket.on('connect', function() {
+        console.log('connected');
+    });
+
+    socket.on('disconnect', function() {
+        console.log('disconnected');
+    });
+
+    socket.on('reconnecting', function() {
+        console.log('reconnecting');
+    });
+
+    socket.on('reconnect', function() {
+        console.log('reconnected');
+    });
+
+    socket.on('error', function(e) {
+        console.log('error: ' + e);
+    });
+
+    socket.on('message', function(message) {
+        console.log('received:');
+        console.dir(message);
+    });
+
+**Warning!** In current development version of gevent-socketio websocket transport is not working, so to avoid errors please restrict client transport list so that websocket is not there
+(like in the example above).
+
+
+Running server
+--------------
+
+Due to high number of possible concurrent and long running connections you cannot use traditional
+server like Apache + mod_wsgi to host project using django-realtime. I use gevents pywsgi server.
+
+You can run this server by executing the following command within your project root directory::
+
+    python manage.py rungevent [interface:port]
+
+Interface and port part is optional, it defaults to localhost and 8000.
+
+If you want to be able to connect to the server from remote hosts, enter ``0`` as interface, like
+this::
+
+    python manage.py rungevent 0:8000
+
+API
+===
 
 Current connections
 -------------------
@@ -126,14 +197,6 @@ Usage
         
         if event.acknowledgeable:
             event.ack('I have received your message!')
-
-Acknowledgements
-================
-
-I want to thank following people for great code I can use in my projects:
-
-* Jeffrey Gelens and others for `gevent-socketio`_ project
-* authors of `Socket.IO`_ project
 
 License
 =======
