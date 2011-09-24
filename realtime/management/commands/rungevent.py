@@ -13,7 +13,7 @@ from django.utils import autoreload
 from socketio import SocketIOServer
 
 def exception_printer(sender, **kwargs):
-    traceback.print_exc()
+    print_exc()
 
 class Command(BaseCommand):
     args = '[interface:port]'
