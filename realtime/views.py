@@ -54,7 +54,8 @@ class Connection(object):
         if message_type == 'message':
             socket_client_message.send(sender = socket, request = request, message = message['data'])
         elif message_type == 'event':
-            event = Event(socket = socket, data = message)
+            event = Event(socket = socket, name = message['name'], args = message.get('args'),
+                id = message.get('id'))
             socket_client_event.send(sender = socket, request = request, event = event)
             socket_client_event_by_type[event.name].send(sender = socket, request = request, event = event)
         else:

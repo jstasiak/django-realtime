@@ -1,0 +1,175 @@
+<!doctype html>
+
+<html>
+<head>
+
+<title>Django, Socket.IO and gevent chat example</title>
+
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+{% load socketio %}
+{% socketio_client_script %}
+
+<script>
+$(document).ready(function() {
+    if(!window.console)
+        window.console = {};
+
+    if(!window.console.log)
+        window.console.log = function() {};
+
+    if(!window.console.dir)
+        window.console.dir = function() {};
+
+    socket = io.connect(null, { transports: ['flashsocket', 'xhr-polling'] });
+    socket.on('connect', function() {
+        console.log('connected');
+        var name = null;
+
+        while(!name) {
+            name = prompt('Enter your name:', '');
+            console.log(name);
+            if(name == 'null')
+                name = null;
+        }
+        set_name(name);
+    });
+
+    socket.on('disconnect', function() {
+        console.log('disconnected');
+    });
+
+    socket.on('reconnecting', function() {
+        console.log('reconnecting');
+    });
+
+    socket.on('reconnect', function() {
+        console.log('reconnected');
+    });
+
+    socket.on('error', function(e) {
+        console.log('error: ' + e);
+    });
+
+    socket.on('chat_message', function(user, message) {
+        show_message('<b>' + user + '</b>: ' + message);
+    });
+
+    socket.on('system_message', function(message) {
+        show_message('<i>' + message + '</i>');
+    });
+
+    show_message = function(message) {
+        console.log('MESSAGE ' + message);
+
+        var html = '<li>' + message + '</li>';
+        var node = $(html);
+        node.hide();
+        $("#messages").append(node);
+        node.fadeIn();
+        $("#messages_div").animate({ scrollTop: $("#messages_div").prop("scrollHeight") }, 300);
+    };
+
+    $('#message_form').submit(function() {
+        var message = $('#message').val();
+        if(message) {
+            send_message(message);
+            $('#message').val('');
+            $('#message').focus();
+        }
+
+        return false;
+    });
+
+    send_message = function(message) {
+        socket.emit('chat_message', message, function() {});
+    };
+
+    set_name = function(name) {
+        socket.emit('chat_set_name', name, function() {
+            $('#message').focus();
+        });
+    };
+});
+
+
+</script>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: verdana;
+    text-size: 0.8em;
+}
+
+div {
+    padding: 0;
+    margin: 0;
+}
+
+#login_window, #chat_window {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#messages_div, #users_div {
+    height: 95%;
+    overflow: auto;
+}
+
+#messages_div {
+    width: 85%;
+    float: left;
+}
+
+#users_div {
+    width: 15%;
+    float: right;
+}
+
+#form_div {
+    width: 100%;
+    height: 5%;
+    clear: both;
+    display: table;
+}
+
+#form_div div {
+    height: 100%;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#messages {
+    list-style-type: none;
+}
+
+#message {
+    width: 250px;
+}
+
+</style>
+
+</head>
+<body>
+
+<div id="chat_window">
+    <div id="messages_div">
+        <ul id="messages"></ul>
+    </div>
+    <div id="users_div"></div>
+    <div id="form_div">
+        <div>
+            <form id="message_form">
+                <input id="message">
+                <input type="submit" value="Send">
+            </form>
+        </div>
+    </div>
+</div>
+
+
+</body>

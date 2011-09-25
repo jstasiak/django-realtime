@@ -50,6 +50,9 @@ Some features of django-realtime are inspired by django-socketio project
 
 Django-realtime Python package name is simply ``realtime``.
 
+Please feel free to create an issue if you feel that something should be improved regarding code
+or documentation.
+
 Configuration of your project
 -----------------------------
 
@@ -161,7 +164,7 @@ In module ``realtime.signals`` we have:
 
 In module ``realtime.events`` there is ``Event`` class defined. Its public interface visible for listeners is as follows:
 
-* ``ack(params)`` - functions which confirms receiving event and can be passed some data to send to client in confirmation
+* ``ack(*params)`` - functions which confirms receiving event and can be passed some data to send to client in confirmation
 * ``data`` - event data
 * ``name`` - name of the event
 * ``acknowledgeable()`` - true if this event can be acknowledged
@@ -197,6 +200,13 @@ Usage
         
         if event.acknowledgeable:
             event.ack('I have received your message!')
+
+Example
+=======
+
+In project root you can find ``example_chat`` directory. It contains very simple live chat
+implementation which uses django-realtime.
+
 
 License
 =======
