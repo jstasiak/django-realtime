@@ -1,14 +1,19 @@
 
+import re
+from os.path import dirname, join
 from setuptools import setup, find_packages
 
+version_match = re.search(r'''__version__\s+=\s+['"]([^'"]+)['"]''',
+    open(join(dirname(__file__), 'realtime', '__init__.py')).read())
+version = version_match.group(1)
 
 setup(
     name = "django-realtime",
-    version = __import__("realtime").__version__,
+    version = version,
     author = "Jakub Stasiak",
     author_email = "kuba.stasiak@gmail.com",
     description = ("Django application that simplifies usage of socket.io in Django projects"),
-    long_description = open('README.md').read(),
+    long_description = open('README.rst').read(),
     url = "http://github.com/jstasiak/django-realtime",
     py_modules=["realtime",],
     install_requires=["gevent-socketio", "gevent-websocket"],

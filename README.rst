@@ -207,6 +207,8 @@ Example
 In project root you can find ``example_chat`` directory. It contains very simple live chat
 implementation which uses django-realtime.
 
+I warn you, it is just proof of concept and do not expect it to work flawlessly.
+
 
 License
 =======
