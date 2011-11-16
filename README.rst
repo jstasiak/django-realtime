@@ -1,3 +1,15 @@
+Notice
+======
+
+Beware! This project is highly experimental. It is my personal project which may result in lack
+of documentation, lack of my attention due to busy time etc.
+
+Due to its early stage, it's API is subject to change (not drastically, but still).
+
+Please feel free to create an issue if you feel that something should be improved regarding code
+or documentation. I also encourage you to hack the source code, it is pretty short and can provide
+better understanding of what's going on.
+
 Installation
 ============
 
@@ -49,9 +61,6 @@ Some features of django-realtime are inspired by django-socketio project
 * I started this project before I discovered django-socketio ;)
 
 Django-realtime Python package name is simply ``realtime``.
-
-Please feel free to create an issue if you feel that something should be improved regarding code
-or documentation.
 
 Configuration of your project
 -----------------------------
@@ -109,8 +118,9 @@ I always take and customize::
         console.dir(message);
     });
 
-**Warning!** In current development version of gevent-socketio websocket transport is not working, so to avoid errors please restrict client transport list so that websocket is not there
-(like in the example above).
+**Warning!** In current development version (it is still correct at 2011-11-16) of
+gevent-socketio websocket transport is not working, so to avoid errors please restrict
+client transport list so that websocket is not there (like in the example above).
 
 
 Running server
@@ -150,6 +160,31 @@ You can for example iterate over it and list connected session ids::
     for socket in connected_sockets:
         print('- {0}'.format(socket.session.session_id))
 
+When you have reference to connected ``socket`` (obtained from ``realtime.connected_sockets``,
+from signal handler parameter ``sender`` or by other means), you can use following methods::
+
+    # sends string 'Hallelujah!' by this particular socket to this particular client
+    # signature: socket.send(STRING)
+    socket.send('Hallelujah!')
+
+    # emits event named 'notice' with arguments 1, 2 and '!!!'
+    # signature: socket.emit(EVENT_NAME, *args)
+    socket.emit('notice', 1, 2, '!!!')
+
+    # these are just like socket.send and socket.emit, but send message/event to all
+    # clients but this one
+    socket.broadcast_send('Hey! New user connected!')
+    socket.broadcast_emit('notice', 'Server is shutting down', 'kaboom')
+
+In current implementation of ``gevent-socketio``, if message passed to ``socket.send`` is not
+basestring instance, it will be converted to its string representation. There is no JSON
+encoding here.
+
+On the other hand, arguments supplied to ``socket.emit`` (and ``broadcast_emit``) are
+JSON encoded.
+
+
+    
 Events
 ------
 
