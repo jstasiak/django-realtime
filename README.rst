@@ -176,11 +176,15 @@ from signal handler parameter ``sender`` or by other means), you can use followi
     socket.broadcast_send('Hey! New user connected!')
     socket.broadcast_emit('notice', 'Server is shutting down', 'kaboom')
 
+    # acknowledges receiving of an event with particular id
+    # signature: socket.ack(EVENT_ID, *args)
+    socket.ack('13+', 'event', 'was', 'received', 'blah', 'blah')
+
 In current implementation of ``gevent-socketio``, if message passed to ``socket.send`` is not
 basestring instance, it will be converted to its string representation. There is no JSON
 encoding here.
 
-On the other hand, arguments supplied to ``socket.emit`` (and ``broadcast_emit``) are
+On the other hand, arguments supplied to ``socket.emit``, ``broadcast_emit`` and ``socket.ack`` are
 JSON encoded.
 
 
