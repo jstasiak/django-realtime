@@ -19,6 +19,7 @@ setup(
     install_requires=["gevent-socketio", "gevent-websocket"],
     zip_safe = False,
     include_package_data = True,
+    package_data = { 'realtime': ['static/js/external/*'] },
     packages = find_packages(),
     classifiers = [
         "Development Status :: 4 - Beta",
