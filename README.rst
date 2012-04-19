@@ -252,7 +252,7 @@ I warn you, it is just proof of concept and do not expect it to work flawlessly.
 License
 =======
 
-This project code is licensed under BSD license unless stated otherwise. Take it and you it.
+This project code is licensed under BSD license unless stated otherwise. Take it and use it.
 
 This repository also contains ``Socket.IO`` client which has its own license.
 
