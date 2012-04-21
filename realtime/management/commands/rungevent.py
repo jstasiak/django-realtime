@@ -17,7 +17,7 @@ def exception_printer(sender, **kwargs):
 
 class Command(BaseCommand):
     args = '[interface:port]'
-    help = 'runs gevent-socketio pywsgi server'
+    help = 'runs gevent-socketio SocketIOServer'
 
     def handle(self, *args, **options):
         if len(args) == 1:

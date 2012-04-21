@@ -3,10 +3,11 @@ class Event(object):
     Represents socket event received from client. 
     '''
 
-    def __init__(self, socket, name, args = None, id = None):
+    def __init__(self, socket, name, namespace = None, args = None, id = None):
         self._socket = socket
         self.name = name
         self.args = args
+        self._namespace = namespace
         self._event_id = id
         self._acknowledged = False
 
@@ -29,6 +30,6 @@ class Event(object):
         assert self.acknowledgeable()
         assert not self.acknowledged()
 
-        self._socket.ack(self._event_id, *args)
+        self._namespace.ack(*args, event_id = self._event_id)
         self._acknowledged = True
 

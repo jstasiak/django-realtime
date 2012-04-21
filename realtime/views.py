@@ -4,60 +4,51 @@ from django.http import HttpResponse
 from django.db import transaction
 from django.utils.translation import ugettext as _
 
+from socketio import socketio_manage
+from socketio.namespace import BaseNamespace
+
 from .events import Event
 from .signals import socket_connected, socket_disconnected, socket_client_event, socket_client_message, socket_client_event_by_type
 
-@transaction.commit_manually
 def socketio_handler(request):
-    try:
-        socket = request.environ['socketio']
-        connection = Connection(request = request, socket = socket)
-        connection.handle()
-    except Exception as e:
-        transaction.rollback()
-        raise
+    value = socketio_manage(request.environ, {
+        '': RootNamespace,
+        }, request = request,
+    )
 
-    return HttpResponse()
+    return value
 
+class RootNamespace(BaseNamespace):
+    def recv_connect(self):
+        socket_connected.send(sender = self.socket,
+            request = self.request)
 
-class Connection(object):
-    def __init__(self, request, socket):
-        self._request = request
-        self._socket = socket
+    def __getattr__(self, name):
+        assert name.startswith('on_')
+        name = name.lstrip('on_')
+        def f(*args, **kwargs):
+            event_id = kwargs.get('event_id')
+            with transaction.commit_on_success():
+                self.handle_event(name = name, args = args, event_id = event_id)
 
-    def handle(self):
-        socket = self._socket
-        request = self._request
+        return f
 
-        socket_connected.send(sender = socket, request = request)
+    def recv_disconnect(self):
+        socket_disconnected.send(sender = self.socket,
+            request = self.request)
 
-        while True:
-            message = socket.receive()
+    def handle_event(self, name, args, event_id = None):
+        request, socket = self.request, self.socket
 
-            # all socket handling runs inside single long-running transaction
-            # commit refreshes transaction state
-            transaction.commit()
-
-            if message:
-                self.handle_message(message)
-            else:
-                break
-
-            transaction.commit()
-
-        socket_disconnected.send(sender = socket, request = request)
-
-    def handle_message(self, message):
-        request, socket = self._request, self._socket
-        message_type = message.pop('type')
+        message_type = name
 
         if message_type == 'message':
-            socket_client_message.send(sender = socket, request = request, message = message['data'])
-        elif message_type == 'event':
-            event = Event(socket = socket, name = message['name'], args = message.get('args'),
-                id = message.get('id'))
-            socket_client_event.send(sender = socket, request = request, event = event)
-            socket_client_event_by_type[event.name].send(sender = socket, request = request, event = event)
+            socket_client_message.send(sender = socket,
+                request = request, message = args)
         else:
-            assert False, "Should not happen"
-             
+            event = Event(socket = socket, namespace = self, name = name,
+                args = args, id = event_id)
+            socket_client_event.send(
+                sender = socket, request = request, event = event)
+            socket_client_event_by_type[event.name].send(
+                sender = socket, request = request, event = event)
