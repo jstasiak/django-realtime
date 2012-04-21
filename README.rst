@@ -28,7 +28,7 @@ In Red Hat/CentOS/Fedora they can be obtained by following commands::
     easy_install pip
     pip install git+https://jstasiak@github.com/jstasiak/gevent-socketio.git@8835a91dffba4447564ffa30df95663a13e1997e@
 
-You also want to have Socket.IO client, such client in version 0.8.4 is provided by this project.
+You also want to have Socket.IO client, such client in version 0.9.6 is provided by this project.
 
 
 Installation itself
@@ -42,7 +42,7 @@ Django-realtime is distributed as setuptools package. To install it with pip exe
 Introduction
 ============
 This application allow you to use Socket.IO based communication within your Django project.
-It uses fairly recent version of Socket.IO - currently 0.8.4.
+It uses fairly recent version of Socket.IO - currently 0.9.6.
 What I like in Socket.IO newer than 0.6 is that it has additional communication
 channels - events. Every event can be acknowledged with optional return data which is really
 nice feature.
