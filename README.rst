@@ -17,7 +17,7 @@ Requirements
 ------------
 
 * gevent-socketio from `my gevent-socketio repository <https://github.com/jstasiak/gevent-socketio>`_
-  (``hg/develop`` branch) and its dependencies
+  (``old`` branch) and its dependencies
 * pip
 * django >= 1.3
 * git ;)
@@ -26,7 +26,7 @@ In Red Hat/CentOS/Fedora they can be obtained by following commands::
 
     yum install libevent-devel python-setuptools gcc git-core
     easy_install pip
-    pip install git+https://jstasiak@github.com/jstasiak/gevent-socketio.git@hg/develop
+    pip install git+https://jstasiak@github.com/jstasiak/gevent-socketio.git@old
 
 You also want to have Socket.IO client, such client in version 0.8.4 is provided by this project.
 
