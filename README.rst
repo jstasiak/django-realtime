@@ -10,6 +10,8 @@ Please feel free to create an issue if you feel that something should be improve
 or documentation. I also encourage you to hack the source code, it is pretty short and can provide
 better understanding of what's going on.
 
+**This documentation is out of date**
+
 Installation
 ============
 
@@ -26,9 +28,12 @@ In Red Hat/CentOS/Fedora they can be obtained by following commands::
 
     yum install libevent-devel python-setuptools gcc git-core
     easy_install pip
-    pip install git+https://jstasiak@github.com/jstasiak/gevent-socketio.git@8835a91dffba4447564ffa30df95663a13e1997e@
 
 You also want to have Socket.IO client, such client in version 0.9.6 is provided by this project.
+
+To install dependencies to use chat example please execute::
+
+    pip install -r requiements.txt
 
 
 Installation itself
@@ -175,10 +180,6 @@ from signal handler parameter ``sender`` or by other means), you can use followi
     # clients but this one
     socket.broadcast_send('Hey! New user connected!')
     socket.broadcast_emit('notice', 'Server is shutting down', 'kaboom')
-
-    # acknowledges receiving of an event with particular id
-    # signature: socket.ack(EVENT_ID, *args)
-    socket.ack('13+', 'event', 'was', 'received', 'blah', 'blah')
 
 In current implementation of ``gevent-socketio``, if message passed to ``socket.send`` is not
 basestring instance, it will be converted to its string representation. There is no JSON

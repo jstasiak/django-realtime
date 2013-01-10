@@ -6,36 +6,37 @@ from realtime.util import failure, success
 
 @receiver(socket_client_event_by_type['echo'])
 def handle_echo(sender, request, event, **kwargs):
-    if event.acknowledgeable():
-        event.ack(*event.args)
+    return event.args
 
 @receiver(socket_connected)
 def handle_connected(sender, request, **kwargs):
     socket = sender
     session = socket.session
-    session.user_name = None
+    del session['user_name']
 
 @receiver(socket_disconnected)
 def handle_disconnected(sender, request, **kwargs):
     socket = sender
     session = socket.session
-    if session.user_name:
-        socket.broadcast_emit('system_message', '{0} has left'.format(session.user_name))
+    namespace = kwargs['namespace']
+    if 'user_name' in session:
+        namespace.broadcast_event_not_me('system_message', '{0} has left'.format(session['user_name']))
 
 @receiver(socket_client_event_by_type['chat_set_name'])
 def handle_set_name(sender, request, event, **kwargs):
     socket = sender
     user_name = event.args[0]
+    namespace = kwargs['namespace']
 
     session = socket.session
-    if session.user_name:
-        socket.broadcast_emit('system_message', '{0} changed his name to {1}'.format(
-            session.user_name, user_name), include_self = True)
+    if 'user_name' in session:
+        namespace.broadcast_event('system_message', '{0} changed his name to {1}'.format(
+            session['user_name'], user_name))
     else:
-        socket.broadcast_emit('system_message', '{0} has joined'.format(user_name), include_self = True)
+        namespace.broadcast_event('system_message', '{0} has joined'.format(user_name))
 
-    session.user_name = user_name
-    event.ack(success())
+    session['user_name'] = user_name
+    return success()
 
 
 @receiver(socket_client_event_by_type['chat_message'])
@@ -44,9 +45,12 @@ def handle_chat_message(sender, request, event, **kwargs):
     session = socket.session
 
     message = event.args[0]
+    namespace = kwargs['namespace']
 
-    if not session.user_name:
-        event.ack(failure())
+    if 'user_name' not in session:
+        result = failure()
     else:
-        socket.broadcast_emit('chat_message', session.user_name, message, include_self = True)
-        event.ack(success())
+        namespace.broadcast_event('chat_message', session['user_name'], message)
+        result = success()
+
+    return result

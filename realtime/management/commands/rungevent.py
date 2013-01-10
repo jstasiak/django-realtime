@@ -10,7 +10,7 @@ from django.core.handlers.wsgi import WSGIHandler
 from django.core.signals import got_request_exception
 from django.utils import autoreload
 
-from socketio import SocketIOServer
+from socketio.server import SocketIOServer
 
 def exception_printer(sender, **kwargs):
     print_exc()
