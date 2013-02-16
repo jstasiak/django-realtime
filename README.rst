@@ -26,8 +26,13 @@ Requirements
 
 In Red Hat/CentOS/Fedora they can be obtained by following commands::
 
-    yum install libevent-devel python-setuptools gcc git-core
-    easy_install pip
+    sudo yum install libevent-devel python-devel python-setuptools gcc git-core
+    sudo easy_install pip
+
+In Debian/Ubuntu::
+
+    sudo apt-get install libevent-dev python-dev python-setuptools gcc git-core
+    sudo easy_install pip
 
 You also want to have Socket.IO client, such client in version 0.9.6 is provided by this project.
 
