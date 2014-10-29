@@ -1,3 +1,9 @@
+Warning
+=======
+**This documentation is out of date and the project is not maintained or supported, it very likely
+doesn't work at all and you'll probably be more lucky having a look at something else (I recommend
+websocket server not tied to Django).**
+
 Notice
 ======
 
@@ -9,8 +15,6 @@ Due to its early stage, it's API is subject to change (not drastically, but stil
 Please feel free to create an issue if you feel that something should be improved regarding code
 or documentation. I also encourage you to hack the source code, it is pretty short and can provide
 better understanding of what's going on.
-
-**This documentation is out of date**
 
 Installation
 ============
